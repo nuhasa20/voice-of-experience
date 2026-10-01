@@ -3,3 +3,5 @@ audio/
 __pycache__/
 node_modules/
 *.db
+
+/devpost/learner-profile.md
