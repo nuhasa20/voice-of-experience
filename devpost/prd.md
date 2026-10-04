@@ -5,15 +5,15 @@ status: approved
 
 # Voice of Experience (صوت الخبرة) — Product Requirements
 
-A voice-first knowledge preservation web application for oil and gas IT support engineers that captures spoken troubleshooting expertise in Libyan Arabic and English, extracts structured expert-approved diagnostic cards, and provides search with a strict "I don't know" anti-hallucination boundary.  
+A voice-first knowledge preservation web application for oil and gas data analysts and data engineers that captures spoken troubleshooting expertise in Libyan Arabic and English, extracts structured expert-approved diagnostic cards, and provides search with a strict "I don't know" anti-hallucination boundary.  
 **Source:** `scope.md > # Voice of Experience` & `scope.md > The Unique Kernel`.
 
 ---
 
 ## 1. The Core Journey
 1. **Arrival:** The engineer opens the application in desktop Chrome and sees a single unified screen with an advisory warning, a prominent search box with hint questions, and a library displaying the 5 pre-loaded seed cards.
-2. **Search:** The engineer types a symptom in Arabic or English (or clicks an example hint) and presses Enter.
-   - *If matching cards exist:* The library view is replaced with ranked matching cards (with a "Best match" tag on the top result). The user reviews diagnostic steps, checks, safety warnings, and listens to the expert's original voice recording.
+2. **Search:** The engineer types a data troubleshooting symptom in Arabic or English (or clicks an example hint) and presses Enter.
+   - *If matching cards exist:* The library view is replaced with ranked matching cards (with a "Best match" tag on the top result). The user reviews diagnostic steps, checks, cautions, and listens to the expert's original voice recording.
    - *If no card matches:* A calm panel displays *"I don't know"*, explaining that the app only answers from genuine human recordings, with options to rephrase, browse all cards, or record an expert note.
 3. **Contribution:** An experienced engineer clicks *"Record an expert note"*, opening a 4-step modal wizard:
    - **Step 1 (Setup):** Enters Name, selects Real vs. Demo tag, checks external AI processing consent, and reads the confidentiality warning.
@@ -33,7 +33,10 @@ A unified single-page application with an interactive modal wizard for contribut
   - Safety subtitle: *"Advisory only: never connects to or controls any operational system"*
 - **Search Section:**
   - Large search input field (`[ اكتب المشكلة بلغتك... ]`)
-  - Clickable example question chips (UI hints only; formal acceptance tests use separate paraphrased queries)
+  - Clickable example question chips (UI hints only; distinct from acceptance test queries):
+    - `[ تسريب بيانات التارغت في التدريب ]`
+    - `[ Sensors recorded at different moments ]`
+    - `[ HTML report fails to render without external CDN ]`
   - Search button and a *"Clear search"* button (visible when filtering)
 - **Cards Library Section:**
   - Displays the 5 seed cards (or filtered search results)
@@ -54,7 +57,7 @@ A unified single-page application with an interactive modal wizard for contribut
   - Background: Warm light gray (`#F4F4F6` / `#F8F9FA`).
   - Primary text: Deep dark navy (`#0F172A`).
   - Interactive elements (buttons, links): Deep Teal (`#0F766E`).
-  - Safety & Warnings: Reserved Amber (`#B45309`) — used exclusively for human-stated safety cautions ("amber means caution").
+  - Cautions: Reserved Amber (`#B45309`) — used exclusively for human-stated cautions ("amber means caution").
   - Provenance Badges:
     - **Real:** Green badge with visible text label `[Real]` (self-declared by speaker).
     - **Demo:** Neutral gray badge with visible text label `[Demo]`.
@@ -76,22 +79,22 @@ A unified single-page application with an interactive modal wizard for contribut
     - **Expert Name:** Contributor's self-declared name.
     - **Audio Player:** Inline play/pause with duration readout (e.g., `1:15`).
     - **Problem Summary:** Clear problem title in the language of the recording.
-    - **Safety Caution (Permanent):** One concise line of caution visible even when collapsed. If the human stated no caution, shows *"No caution stated by the expert"* in neutral styling (no amber).
+    - **Caution (Permanent):** One concise line of caution visible even when collapsed. If the human stated no caution, shows *"No caution stated by the expert"* in neutral styling (no amber).
     - **"Show details" Toggle:** Expands/collapses the full card.
 - **Expanded Card View:**
   - Displays the 5 diagnostic fields:
     - Possible Causes
     - Diagnostic Checks
     - Solution Steps
-    - Full Safety Warnings & Cautions
+    - Full Cautions
     - Provenance Attribution: *"Structured by AI from the expert's recording, approved by the expert."*
 - **Seed Cards Requirement:**
-  - Library ships with 5 seed cards covering distinct, non-competing oil & gas IT support topics:
-    1. Field network / telemetry drop
-    2. Sensor data logging service stalled
-    3. Corrupted backup archive
-    4. Sensor calibration drift
-    5. Local server / database connection failure
+  - Library ships with 5 seed cards covering distinct, non-competing oil & gas data engineering topics:
+    1. Data leakage in model evaluation
+    2. Unsynchronized sensor measurements (readings taken at different moments merged as simultaneous)
+    3. Limited compute environment (RAM exhaustion on large telemetry files)
+    4. Reports that do not open offline (remote field access without CDN/internet)
+    5. Inconsistent dates and event logs (mixed YYYY-MM-DD and DD/MM/YYYY formats in same file, and tests right after unlogged maintenance)
   - At least 3 cards originate from real human voice recordings. All seed cards are created through the application's own contribution wizard.
 
 ### 4.2 Search & "I Don't Know" Anti-Hallucination Fallback
@@ -129,7 +132,7 @@ A unified single-page application with an interactive modal wizard for contribut
     - Any field not mentioned by the expert is explicitly marked *"Not mentioned"* and left empty.
     - If the transcript contains only small talk or lacks troubleshooting substance, no card is created; shows *"No troubleshooting content found"* with options to edit transcript or re-record.
 - **Step 4: Review & Approval**
-  - Shows the 5 extracted fields with header: *"Structured by AI from the expert's recording"*.
+  - Shows the 5 extracted fields (Problem Summary, Possible Causes, Checks, Solution, Cautions) with header: *"Structured by AI from the expert's recording"*.
   - Field-level editing is optional in the POC; clicking **"Approve & Save"** is required.
   - Saves audio and card to persistent local storage, closes modal, adds new card to top of library, and displays a temporary success message.
 
@@ -160,10 +163,26 @@ A unified single-page application with an interactive modal wizard for contribut
 
 - **Anti-Hallucination Retrieval Acceptance Test:**
   - **10-Query Tuning Set:**
-    - 5 In-scope queries (one per seed card: 2 in Libyan Arabic, 2 in English, 1 mixed; all natural paraphrases, not copied from card text) must retrieve their correct card.
-    - 5 Out-of-scope queries (including 2 near-domain negatives such as *"Reset SAP HR password"*, *"Configure Outlook email on mobile"*, and 3 distant negatives such as *"How do I replace a drill bit?"*) must score below threshold and cleanly trigger *"I don't know"*.
+    - 5 In-scope queries (one per seed card: 2 in Libyan Arabic, 2 in English, 1 mixed; all natural paraphrases, not copied from card text):
+      1. *Libyan Arabic (Card 1):* "المودل يعطي دقة 99% في التدريب بس نتايجه كارثية لما نطبقه على بيانات جديدة"
+      2. *Libyan Arabic (Card 2):* "الحساسات تسجل في أوقات متفرقة ودمج الصفوف مع بعض يعطي علاقات غلط"
+      3. *English (Card 3):* "Kernel crashes with out of memory error when loading 10GB telemetry file"
+      4. *English (Card 4):* "Field engineers at remote well pads cannot load weekly production summary without internet"
+      5. *Mixed (Card 5):* "ملف واحد فيه صيغتين للتاريخ YYYY-MM-DD مع DD/MM/YYYY وقياسات بعد الصيانة الميدانية مش موثقة"
+    - 5 Out-of-scope queries:
+      - Near-domain negative 1: "How to tune hyperparameters for gradient boosting"
+      - Near-domain negative 2: "Power BI refresh error after changing data source"
+      - Distant negative 1: "How do I replace a drill bit on a rig?"
+      - Distant negative 2: "What is the average oil price today?"
+      - Distant negative 3: "Write a python script to scrape news headlines"
   - **Held-Out Test Set (6 Queries):**
-    - 3 Positive and 3 Negative queries (including at least one near-domain negative) written beforehand, frozen, and evaluated without modification. Results reported as observed.
+    - 3 Positive and 3 Negative queries written beforehand, frozen, and evaluated without modification:
+      - Positive 1 (Card 1): "Future target values leaked into the training features before split"
+      - Positive 2 (Card 2): "Sensor timestamps do not align across independent logging instruments"
+      - Positive 3 (Card 5): "تضارب صياغة التواريخ في نفس الجدول مع قراءات شاذة بعد أعمال صيانة غير مسجلة"
+      - Negative 1 (Near-domain): "How to calculate moving average in SQL window functions"
+      - Negative 2 (Near-domain): "Exporting clean GeoJSON from ArcGIS well coordinates"
+      - Negative 3 (Distant): "What is the weather forecast for Sebha next week?"
   - **Threshold Policy:** Calibrated on the 10-query tuning set so all 5 in-scope queries pass and all 5 out-of-scope queries fail.
 - **Contribution Acceptance Criteria:**
   - Cannot proceed past Step 1 without name, origin tag, and consent.
@@ -188,7 +207,7 @@ A unified single-page application with an interactive modal wizard for contribut
 ---
 
 ## 8. Non-Goals (Explicitly Cut)
-- ❌ Direct execution or network connection to real industrial/IT systems (advisory only).
+- ❌ Direct execution or network connection to real industrial/IT systems, databases, or pipelines (advisory only).
 - ❌ Open-ended conversational chat or general AI question answering.
 - ❌ Automated multi-language translation beyond mixed Arabic/English query matching.
 - ❌ Production cloud deployment (runs locally in development mode).
