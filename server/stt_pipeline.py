@@ -32,8 +32,8 @@ GROQ_STT_PROMPT = (
     "keep English terms in Latin letters."
 )
 
-def call_gemini_stt(model: str, ogg_bytes: bytes, max_retries: int = 3) -> Optional[str]:
-    """Call Gemini multimodal STT with exponential backoff on 429/503."""
+def call_gemini_stt(model: str, ogg_bytes: bytes, max_retries: int = 2) -> Optional[str]:
+    """Call Gemini multimodal STT with at most 1 retry (~3s backoff) on 429/503."""
     if not GEMINI_API_KEY:
         return None
 
@@ -64,7 +64,7 @@ def call_gemini_stt(model: str, ogg_bytes: bytes, max_retries: int = 3) -> Optio
         }
     }
 
-    delays = [3, 6, 12]
+    delays = [3]
     for attempt in range(max_retries):
         try:
             resp = requests.post(url, headers=headers, json=payload, timeout=20)
@@ -77,13 +77,13 @@ def call_gemini_stt(model: str, ogg_bytes: bytes, max_retries: int = 3) -> Optio
                         return parts[0]["text"].strip()
             elif resp.status_code in (429, 503):
                 # Backoff and retry
-                time.sleep(delays[attempt] if attempt < len(delays) else 12)
+                time.sleep(delays[attempt] if attempt < len(delays) else 3)
                 continue
             else:
                 # Other non-retryable error
                 break
         except requests.RequestException:
-            time.sleep(delays[attempt] if attempt < len(delays) else 12)
+            time.sleep(delays[attempt] if attempt < len(delays) else 3)
             continue
 
     return None

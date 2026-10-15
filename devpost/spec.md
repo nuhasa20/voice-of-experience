@@ -213,8 +213,8 @@ Implements `prd.md > 3. Look and Feel` and `scope.md > Inspiration & Identity`.
 - **Model Configuration:** Model names are read from `.env` at startup (keys: `STT_PRIMARY_MODEL`, `STT_SECONDARY_MODEL`, `EXTRACTION_MODEL`, `EXTRACTION_FALLBACK_MODEL`) with defaults. This allows swapping models without code changes as Google or Groq retires/adds model versions.
 - **Architecture & Failover Logic:**
   1. **SHA-256 Audio Cache Check:** Computes the SHA-256 hash of the **original uploaded audio bytes**. If a cached transcript exists in the `stt_cache` table, returns immediately with 0 API calls.
-  2. **Primary Tier (configured model, default `gemini-3.8-flash`):** Calls Gemini multimodal audio endpoint with verbatim prompt. On HTTP 503 or 429, executes exponential backoff (3s, 6s, 12s retries, up to 3 attempts).
-  3. **Secondary Tier (configured model, default `gemini-3.5-flash`):** If primary exhausts retries, attempts the secondary model with same retry logic.
+  2. **Primary Tier (configured model, default `gemini-3.8-flash`):** Calls Gemini multimodal audio endpoint with verbatim prompt. On HTTP 503 or 429, executes exactly 1 retry with a ~3s backoff before failing over to the secondary tier to keep worst-case wait minimal.
+  3. **Secondary Tier (configured model, default `gemini-3.5-flash`):** If primary exhausts its retry, attempts the secondary model with the same fast failover logic.
   4. **Tertiary Fallback Tier (`Groq whisper-large-v3`):** If both Gemini models fail (or hit quota), falls back to Groq Whisper Large v3 (`temperature=0`, `language="ar"`, with domain glossary prompt).
   5. **Provenance Tagging:** Attaches metadata (`stt_provider: "gemini-3.8-flash"` or `stt_provider: "groq-fallback"`) so the UI displays an informative notice when fallback occurred.
 - **Domain Glossary Prompt (Gemini):**
@@ -231,7 +231,7 @@ Implements `prd.md > 3. Look and Feel` and `scope.md > Inspiration & Identity`.
 
 ### 5. Quote-Verified AI Card Extraction Engine
 - **Role:** Extracts structured diagnostic fields from the expert-edited transcript with anti-hallucination verification based on verbatim quotes.
-- **Connects to:** Configured primary extraction model (`EXTRACTION_MODEL`, default: `gemini-3.1-flash-lite`), secondary fallback model (`EXTRACTION_FALLBACK_MODEL`, verified at build time from provider model list, e.g. `gemini-2.5-flash` or Groq `llama-3.3-70b-versatile`), and SQLite extraction cache.
+- **Connects to:** Configured primary extraction model (`EXTRACTION_MODEL`, default: `gemini-3.1-flash-lite`), secondary fallback model (`EXTRACTION_FALLBACK_MODEL`, default: `gemini-3.6-flash`), tertiary fallback model (Groq `llama-3.3-70b-versatile`), and SQLite extraction cache.
 - **Implements:** `prd.md > 4.3 (Step 4)` & user constraints on quote verification.
 - **Extraction Caching:**
   - Before calling any extraction LLM, computes the SHA-256 hash of the edited transcript text.

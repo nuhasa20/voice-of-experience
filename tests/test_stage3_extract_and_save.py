@@ -218,6 +218,72 @@ class TestExtractEndpoint:
         assert result["problem_summary"]["status"] == "unverified"
         assert "contains_unclear_marker" in result["problem_summary"]["reason"]
 
+    def test_extraction_fallback_to_secondary_model_with_stubs(self, monkeypatch):
+        """
+        Simulate primary extraction model failing (e.g. 404/503) and secondary fallback
+        model (gemini-3.6-flash) responding. Verify fields verified, cached, and model_name tracked.
+        """
+        import hashlib
+        from server.config import EXTRACTION_MODEL, EXTRACTION_FALLBACK_MODEL
+        from server.extractor import extract_card_fields
+        from server.database import get_cached_extraction
+
+        test_transcript = (
+            "المشكلة الأولى تسرب البيانات والموديل يعطي خطأ في التست "
+            "السبب عدم فصل البيانات والحل نقسم البيانات أولاً "
+            "وتحذير لا تعتمد على دقة مريبة في التست"
+        )
+        test_hash = hashlib.sha256(test_transcript.encode("utf-8")).hexdigest()
+
+        mock_extraction = {
+            "problem_summary": {
+                "verbatim_quote": "الموديل يعطي خطأ في التست",
+                "summary": "Model error in test set",
+            },
+            "possible_causes": {
+                "verbatim_quote": "السبب عدم فصل البيانات",
+                "summary": "Data not separated properly",
+            },
+            "checks": {
+                "verbatim_quote": None,
+                "summary": None,
+                "stated": False,
+            },
+            "solution_steps": {
+                "verbatim_quote": "الحل نقسم البيانات أولاً",
+                "summary": "Split data first",
+            },
+            "cautions": {
+                "verbatim_quote": "تحذير لا تعتمد على دقة مريبة في التست",
+                "summary": "Do not trust suspicious accuracy",
+                "stated": True,
+            },
+        }
+
+        def mock_call_gemini_extract(model: str, transcript: str, max_retries: int = 2):
+            if model == EXTRACTION_MODEL:
+                return None
+            elif model == EXTRACTION_FALLBACK_MODEL:
+                return mock_extraction
+            return None
+
+        monkeypatch.setattr("server.extractor._call_gemini_extract", mock_call_gemini_extract)
+
+        result = extract_card_fields(test_transcript, provider="gemini")
+
+        # Verify fallback model was used
+        assert result["model_name"] == EXTRACTION_FALLBACK_MODEL
+        assert result["cached"] is False
+        assert result["fields"]["problem_summary"]["status"] == "verified"
+        assert result["fields"]["possible_causes"]["status"] == "verified"
+        assert result["fields"]["solution_steps"]["status"] == "verified"
+        assert result["fields"]["cautions"]["status"] == "verified"
+
+        # Verify result is cached in DB under fallback model name
+        cached_row = get_cached_extraction(test_hash)
+        assert cached_row is not None
+        assert cached_row["model_name"] == EXTRACTION_FALLBACK_MODEL
+
 
 # ---------------------------------------------------------------------------
 # POST /api/cards tests

@@ -15,7 +15,7 @@ STT_SECONDARY_MODEL = os.getenv("STT_SECONDARY_MODEL", "gemini-3.5-flash").strip
 STT_TERTIARY_MODEL = os.getenv("STT_TERTIARY_MODEL", "whisper-large-v3").strip()
 
 EXTRACTION_MODEL = os.getenv("EXTRACTION_MODEL", "gemini-3.1-flash-lite").strip()
-EXTRACTION_FALLBACK_MODEL = os.getenv("EXTRACTION_FALLBACK_MODEL", "gemini-2.5-flash").strip()
+EXTRACTION_FALLBACK_MODEL = os.getenv("EXTRACTION_FALLBACK_MODEL", "gemini-3.6-flash").strip()
 
 # Storage Directories
 DATA_DIR = BASE_DIR / "data"
