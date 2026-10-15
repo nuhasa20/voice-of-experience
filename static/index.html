@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Voice of Experience (صوت الخبرة) — Voice-first engineering knowledge preservation for industrial troubleshooting">
+  <title>Voice of Experience (صوت الخبرة) — Engineering Troubleshooting Preservation</title>
+  
+  <!-- Preconnect and Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+  <!-- Safety Banner -->
+  <aside class="safety-banner" role="alert">
+    <span class="safety-icon" aria-hidden="true">⚠</span>
+    <span><strong>Safety Notice:</strong> All diagnostic recommendations are preserved from experienced human engineers. Never apply unapproved changes directly to production systems.</span>
+  </aside>
+
+  <!-- Application Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-block">
+        <div class="brand-titles">
+          <div class="brand-main">
+            <span>Voice of Experience</span>
+            <span class="brand-arabic">صوت الخبرة</span>
+          </div>
+          <span class="brand-subtitle">Engineering Knowledge Preservation</span>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div id="apiStatusIndicator" class="status-indicator" title="Backend API Health">
+          <span class="status-dot"></span>
+          <span>Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Surface -->
+  <main class="main-content">
+    <div class="flow-card">
+      
+      <!-- Flow Card Header -->
+      <div class="flow-header">
+        <div class="flow-title-group">
+          <h1>Record & Preserve Diagnostic Note</h1>
+          <p>Capture voice troubleshooting advice with verbatim transcription and verbatim quote verification.</p>
+        </div>
+        <div class="flow-progress-steps" aria-label="Progress Steps">
+          <div id="stepIndicator1" class="step-indicator active">
+            <span class="step-badge">1</span>
+            <span>Setup</span>
+          </div>
+          <div class="step-divider" aria-hidden="true"></div>
+          <div id="stepIndicator2" class="step-indicator">
+            <span class="step-badge">2</span>
+            <span>Capture</span>
+          </div>
+          <div class="step-divider" aria-hidden="true"></div>
+          <div id="stepIndicator3" class="step-indicator">
+            <span class="step-badge">3</span>
+            <span>Transcript</span>
+          </div>
+          <div class="step-divider" aria-hidden="true"></div>
+          <div id="stepIndicator4" class="step-indicator">
+            <span class="step-badge">4</span>
+            <span>Card</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flow Sections Container -->
+      <div class="flow-sections">
+
+        <!-- ===================================================================
+             SECTION 1: Setup & Safety Clearance
+             =================================================================== -->
+        <section id="sectionSetup" class="flow-section active" aria-labelledby="section1Heading">
+          <div class="section-head">
+            <div>
+              <h2 id="section1Heading" class="section-title">
+                <span class="section-number">1</span>
+                <span>Contributor Setup & Safety Clearance</span>
+              </h2>
+              <p class="section-desc">Identify the speaker and verify compliance with operational security rules.</p>
+            </div>
+          </div>
+
+          <div class="setup-grid">
+            <div class="form-group">
+              <label for="expertName" class="form-label">Expert Name / Call Sign *</label>
+              <input type="text" id="expertName" class="form-input" placeholder="e.g. Eng. Sara Al-Haddad" autocomplete="off" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Origin Classification *</label>
+              <div class="origin-selector-group">
+                <label class="origin-option" for="originReal">
+                  <input type="radio" id="originReal" name="originTag" value="Real" checked>
+                  <div class="origin-badge-line">
+                    <span class="badge badge-real">[Real]</span>
+                    <span class="origin-label-title">Production Issue</span>
+                  </div>
+                  <span class="origin-label-desc">Real incident diagnosis from operational systems</span>
+                </label>
+
+                <label class="origin-option" for="originDemo">
+                  <input type="radio" id="originDemo" name="originTag" value="Demo">
+                  <div class="origin-badge-line">
+                    <span class="badge badge-demo">[Demo]</span>
+                    <span class="origin-label-title">Synthetic Scenario</span>
+                  </div>
+                  <span class="origin-label-desc">Simulated or educational troubleshooting case</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confidentiality Notice Callout -->
+          <div class="confidentiality-notice" role="note">
+            <span class="notice-icon" aria-hidden="true">🔒</span>
+            <div>
+              <strong>Confidentiality Constraint:</strong> Do not mention company internal system names, IP addresses, credentials, or client proprietary identifiers in the audio recording.
+            </div>
+          </div>
+
+          <!-- Consent Checkbox -->
+          <div class="consent-group">
+            <input type="checkbox" id="consentCheckbox" class="consent-checkbox">
+            <label for="consentCheckbox" class="consent-text">
+              I agree to store my audio recording locally and allow it to be processed by an AI speech-to-text service for verbatim transcription and diagnostic card structuring.
+            </label>
+          </div>
+
+          <button type="button" id="setupContinueBtn" class="btn-primary" disabled>
+            <span>Continue to Audio Capture</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 2: Audio Capture (Record & Upload)
+             =================================================================== -->
+        <section id="sectionCapture" class="flow-section locked" aria-labelledby="section2Heading">
+          <div class="section-head">
+            <div>
+              <h2 id="section2Heading" class="section-title">
+                <span class="section-number">2</span>
+                <span>Audio Capture (Record or Upload)</span>
+              </h2>
+              <p class="section-desc">Record a voice note via your microphone or upload an existing audio file (Max: 10 MB, 2 minutes).</p>
+            </div>
+          </div>
+
+          <!-- Tabs to switch between Record and Upload -->
+          <div class="capture-tabs" role="tablist">
+            <button type="button" id="captureTabRecord" class="capture-tab-btn active" role="tab" aria-selected="true">
+              <span>🎙 Live Microphone</span>
+            </button>
+            <button type="button" id="captureTabUpload" class="capture-tab-btn" role="tab" aria-selected="false">
+              <span>📁 Upload Audio File</span>
+            </button>
+          </div>
+
+          <!-- Capture Cards Grid -->
+          <div class="capture-cards-wrapper">
+            
+            <!-- Tab 1: Live Record Box -->
+            <div id="recordBoxCard" class="capture-card" style="display: block;">
+              <div class="capture-card-header">
+                <div class="capture-card-title">Microphone Recording</div>
+                <div class="capture-card-sub">Browser MediaRecorder captures audio directly in WebM/Opus format.</div>
+              </div>
+
+              <div class="recorder-box">
+                <button type="button" id="recordBtn" class="record-btn-large" title="Click to Start Recording" aria-label="Record Toggle">
+                  <div class="record-inner-circle"></div>
+                </button>
+                <div id="recordTimer" class="timer-display">00:00</div>
+                <div id="recordStatusText" class="record-status-text">Click the red button to begin recording</div>
+              </div>
+
+              <div id="recordPreviewBox" class="audio-preview-box" style="display: none;">
+                <div class="file-info-badge">
+                  <span><strong>Recorded Clip Preview:</strong></span>
+                  <button type="button" id="rerecordBtn" class="btn-secondary" style="padding: 0.25rem 0.625rem; font-size: 0.75rem;">Re-record</button>
+                </div>
+                <audio id="recordAudioPlayer" controls></audio>
+              </div>
+            </div>
+
+            <!-- Tab 2: Upload Box -->
+            <div id="uploadBoxCard" class="capture-card" style="display: none;">
+              <div class="capture-card-header">
+                <div class="capture-card-title">Audio File Upload</div>
+                <div class="capture-card-sub">Upload an existing voice note (.ogg, .webm, .wav, .mp3).</div>
+              </div>
+
+              <div id="fileDropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop audio file here or click to browse">
+                <span class="dropzone-icon">⇪</span>
+                <div class="dropzone-text">Drag & drop your audio file here, or click to browse</div>
+                <div class="dropzone-hint">Accepted formats: OGG, WebM, WAV, MP3 &bull; Max size: 10 MB &bull; Max duration: 120s</div>
+                <input type="file" id="audioFileInput" accept=".ogg,.webm,.wav,.mp3,.m4a" style="display: none;">
+              </div>
+
+              <div id="uploadPreviewBox" class="audio-preview-box" style="display: none;">
+                <div class="file-info-badge">
+                  <span><strong id="uploadFileName">recording.ogg</strong> (<span id="uploadFileSize">0 MB</span>)</span>
+                  <button type="button" id="clearUploadBtn" class="btn-secondary" style="padding: 0.25rem 0.625rem; font-size: 0.75rem;">Clear</button>
+                </div>
+                <audio id="uploadAudioPlayer" controls></audio>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="captureErrorBanner" class="notice-banner notice-banner-error" style="display: none; margin-top: 1rem;">
+            <span>✕</span>
+            <span id="captureErrorMsg">An error occurred during audio processing.</span>
+          </div>
+
+          <!-- Loading State Overlay -->
+          <div id="captureLoading" class="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Normalizing Audio & Transcribing...</div>
+            <div class="loading-subtext">Converting audio via ffmpeg subprocess and executing verbatim speech-to-text.</div>
+          </div>
+
+          <!-- Capture Actions -->
+          <div class="capture-actions">
+            <button type="button" id="transcribeBtn" class="btn-primary" disabled>
+              <span>Normalize & Transcribe Audio</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 3: Transcript Review & Edit with [unclear] Counter
+             =================================================================== -->
+        <section id="sectionTranscript" class="flow-section locked" aria-labelledby="section3Heading">
+          <div class="section-head">
+            <div>
+              <h2 id="section3Heading" class="section-title">
+                <span class="section-number">3</span>
+                <span>Verbatim Transcript Review & Dialect Correction</span>
+              </h2>
+              <p class="section-desc">Review the exact words spoken. Resolve any marked <code>[unclear]</code> tokens before AI card extraction.</p>
+            </div>
+          </div>
+
+          <!-- Provencance & Cache Header Bar -->
+          <div class="transcript-header-bar">
+            
+            <!-- [unclear] Counter Badge -->
+            <div id="unclearCounter" class="unclear-counter-badge clean" aria-live="polite">
+              <span id="unclearCountNumber" class="unclear-count-number">0</span>
+              <span id="unclearCounterText">[unclear] words remaining</span>
+            </div>
+
+            <!-- Provenance & Cache Tags -->
+            <div class="provenance-tag-box">
+              <span id="sttCachedBadge" class="badge" style="background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe; display:none;">⚡ Cached Transcript</span>
+              <span class="badge badge-provider" title="Transcription model">
+                <span>Model:</span> <span id="sttProviderBadge">gemini-3.5-flash</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Fallback STT Notice (displayed if Groq was triggered) -->
+          <div id="sttFallbackBanner" class="notice-banner notice-banner-info" style="display: none;">
+            <span>ℹ</span>
+            <span><strong>Fallback Notice:</strong> Transcribed via Groq Cloud Whisper fallback due to primary API capacity spike. Technical term spelling preserved.</span>
+          </div>
+
+          <!-- Audio Playback Header -->
+          <div class="transcript-player-wrapper">
+            <span class="player-label">Listen to Recording:</span>
+            <audio id="transcriptAudioPlayer" controls></audio>
+          </div>
+
+          <!-- Plain RTL Textarea Editor -->
+          <div class="transcript-textarea-container">
+            <label for="transcriptEditor" class="form-label" style="margin-bottom: 0.375rem; display: block;">
+              Verbatim Libyan Arabic Transcript (RTL dialect editor):
+            </label>
+            <textarea
+              id="transcriptEditor"
+              class="transcript-editor"
+              dir="rtl"
+              lang="ar"
+              rows="6"
+              placeholder="نص التسجيل الحرفي سيظهر هنا..."
+              spellcheck="false"
+            ></textarea>
+            
+            <div class="editor-hint-bar">
+              <span>Notice: English technical terms (e.g. <em>accuracy, data leakage, normalization</em>) are preserved in Latin letters.</span>
+              <span id="wordCountDisplay">0 words</span>
+            </div>
+          </div>
+
+          <!-- Transcript Actions -->
+          <div class="editor-actions">
+            <button type="button" id="startOverBtn" class="btn-secondary">
+              <span>Discard & Re-record</span>
+            </button>
+
+            <button type="button" id="extractCardBtn" class="btn-primary">
+              <span>Extract Diagnostic Card</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 4: Diagnostic Card Approval (Stage 3 Preview Placeholder)
+             =================================================================== -->
+        <section id="sectionReview" class="flow-section locked" aria-labelledby="section4Heading">
+          <div class="section-head">
+            <div>
+              <h2 id="section4Heading" class="section-title">
+                <span class="section-number">4</span>
+                <span>Review & Approve Diagnostic Card</span>
+              </h2>
+              <p class="section-desc">Verify the AI-extracted fields grounded in verbatim quotes from your transcript.</p>
+            </div>
+          </div>
+
+          <!-- Extraction Loading Overlay -->
+          <div id="extractionLoading" class="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Extracting Diagnostic Fields...</div>
+            <div class="loading-subtext">AI is identifying verbatim quotes for each diagnostic field and verifying them.</div>
+          </div>
+
+          <!-- Extraction Error Banner -->
+          <div id="extractionErrorBanner" class="notice-banner notice-banner-error" style="display: none; margin-bottom: 1rem;">
+            <span>✕</span>
+            <span id="extractionErrorMsg">Extraction failed.</span>
+          </div>
+
+          <!-- Extraction Model Badge -->
+          <div id="extractionMetaBar" class="transcript-header-bar" style="display: none;">
+            <div class="provenance-tag-box">
+              <span id="extractionCachedBadge" class="badge" style="background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe; display:none;">⚡ Cached Extraction</span>
+              <span class="badge badge-provider" title="Extraction model">
+                <span>Extraction Model:</span> <span id="extractionModelBadge">—</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Diagnostic Fields Container -->
+          <div id="extractedFieldsContainer" class="extracted-fields" style="display: none;">
+
+            <!-- Problem Summary -->
+            <div class="extracted-field-card" data-field="problem_summary">
+              <div class="field-header">
+                <span class="field-label">🔍 Problem Summary</span>
+                <span class="field-status-badge" data-status-badge="problem_summary"></span>
+              </div>
+              <blockquote class="field-quote" data-quote="problem_summary" dir="rtl" lang="ar"></blockquote>
+              <div class="field-summary" data-summary="problem_summary"></div>
+            </div>
+
+            <!-- Possible Causes -->
+            <div class="extracted-field-card" data-field="possible_causes">
+              <div class="field-header">
+                <span class="field-label">⚙ Possible Causes</span>
+                <span class="field-status-badge" data-status-badge="possible_causes"></span>
+              </div>
+              <blockquote class="field-quote" data-quote="possible_causes" dir="rtl" lang="ar"></blockquote>
+              <div class="field-summary" data-summary="possible_causes"></div>
+            </div>
+
+            <!-- Checks -->
+            <div class="extracted-field-card" data-field="checks">
+              <div class="field-header">
+                <span class="field-label">✓ Verification Checks</span>
+                <span class="field-status-badge" data-status-badge="checks"></span>
+              </div>
+              <blockquote class="field-quote" data-quote="checks" dir="rtl" lang="ar"></blockquote>
+              <div class="field-summary" data-summary="checks"></div>
+            </div>
+
+            <!-- Solution Steps -->
+            <div class="extracted-field-card" data-field="solution_steps">
+              <div class="field-header">
+                <span class="field-label">🛠 Solution Steps</span>
+                <span class="field-status-badge" data-status-badge="solution_steps"></span>
+              </div>
+              <blockquote class="field-quote" data-quote="solution_steps" dir="rtl" lang="ar"></blockquote>
+              <div class="field-summary" data-summary="solution_steps"></div>
+            </div>
+
+            <!-- Cautions -->
+            <div class="extracted-field-card" data-field="cautions">
+              <div class="field-header">
+                <span class="field-label">⚠ Cautions & Warnings</span>
+                <span class="field-status-badge" data-status-badge="cautions"></span>
+              </div>
+              <blockquote class="field-quote" data-quote="cautions" dir="rtl" lang="ar"></blockquote>
+              <div class="field-summary" data-summary="cautions"></div>
+            </div>
+          </div>
+
+          <!-- Expert Approval & Save Actions -->
+          <div id="cardApprovalActions" class="card-approval-actions" style="display: none;">
+            <div class="consent-group" style="margin-bottom: 1rem;">
+              <input type="checkbox" id="expertApprovalCheckbox" class="consent-checkbox">
+              <label for="expertApprovalCheckbox" class="consent-text">
+                <strong>Expert-Approved:</strong> I confirm that the extracted fields above accurately represent my spoken diagnostic advice.
+              </label>
+            </div>
+
+            <div class="editor-actions">
+              <button type="button" id="backToTranscriptBtn" class="btn-secondary">
+                <span>← Back to Transcript</span>
+              </button>
+
+              <button type="button" id="saveCardBtn" class="btn-primary" disabled>
+                <span>Save Diagnostic Card</span>
+                <span aria-hidden="true">✓</span>
+              </button>
+            </div>
+
+            <!-- Save Loading -->
+            <div id="saveLoading" class="loading-overlay" style="display: none;">
+              <div class="spinner"></div>
+              <div class="loading-text">Saving Card...</div>
+            </div>
+
+            <!-- Save Success Banner -->
+            <div id="saveSuccessBanner" class="notice-banner notice-banner-success" style="display: none; margin-top: 1rem;">
+              <span>✓</span>
+              <span id="saveSuccessMsg">Card saved successfully!</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Unclear Tokens Warning & Confirmation Dialog -->
+  <div id="unclearConfirmModal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="unclearModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-icon-badge" aria-hidden="true">⚠️</div>
+        <div>
+          <h3 id="unclearModalTitle" class="modal-title">Unresolved [unclear] Markers in Transcript</h3>
+          <p class="modal-subtitle">Review recommended before card extraction</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="modal-p">
+          The transcript still contains <strong id="modalUnclearCount" class="modal-unclear-badge">1</strong> unresolved <code>[unclear]</code> marker(s).
+        </p>
+        <div class="modal-callout-warning">
+          <strong>⚠ Verification Rule:</strong>
+          <span>Quotes containing <code>[unclear]</code> are <strong>never accepted</strong> as verified quotes. Any field quoting an unresolved <code>[unclear]</code> token will fail verification and be marked <em>"Could not be verified – please edit"</em>.</span>
+        </div>
+        <p class="modal-p-dim">
+          We recommend clicking <strong>"Back to Editing"</strong> to replace <code>[unclear]</code> with the actual spoken words. Do you want to proceed anyway?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modalCancelBtn" class="btn-secondary">
+          <span>← Back to Editing</span>
+        </button>
+        <button type="button" id="modalConfirmBtn" class="btn-warning-action">
+          <span>Confirm & Extract Anyway →</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Toast Notifications Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Application Footer -->
+  <footer class="app-footer">
+    <p>Voice of Experience (صوت الخبرة) &bull; Built with AI Hackathon &bull; Local Engineering Knowledge Preservation</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
