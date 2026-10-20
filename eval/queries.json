@@ -1,0 +1,145 @@
+[
+ {
+  "id": "T1",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "الموديل يعطيني نتيجة ممتازة جداً في الاختبار بس لما نجرّبوه على بيانات حقيقية ينهار",
+  "expected_card_ids": [
+   "card_31325001d0e2",
+   "card_f98a23687529"
+  ]
+ },
+ {
+  "id": "T2",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "ليش التدريب يرجع قيم فاضية وفي فئة ما ظهرت في العينة",
+  "expected_card_ids": [
+   "card_327ace435275"
+  ]
+ },
+ {
+  "id": "T3",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "هل نخلي الذكاء الاصطناعي يتحكم في فتح وقفل الصمامات بنفسه",
+  "expected_card_ids": [
+   "card_6cc391b4e2e2"
+  ]
+ },
+ {
+  "id": "T4",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "قراءات الضغط تنزل شوية شوية وما أعرف الحساس خربان ولا البئر فيه مشكلة",
+  "expected_card_ids": [
+   "card_953140cd301b"
+  ]
+ },
+ {
+  "id": "T5",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "الشبكة العميقة ما قدرتش تصنف الأعطال القليلة",
+  "expected_card_ids": [
+   "card_54399401d01d"
+  ]
+ },
+ {
+  "id": "T6",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "درّبنا النموذج على بيانات مولّدة من محاكي وفشل على بئر حقيقي",
+  "expected_card_ids": [
+   "card_f98a23687529"
+  ]
+ },
+ {
+  "id": "T7",
+  "split": "tuning",
+  "kind": "in_scope",
+  "query": "model performs well on the test set but poorly in production",
+  "expected_card_ids": [
+   "card_31325001d0e2",
+   "card_f98a23687529"
+  ]
+ },
+ {
+  "id": "T8",
+  "split": "tuning",
+  "kind": "near_domain_negative",
+  "query": "كيف نعمل resampling للضغط مع قياسات الـ test separator",
+  "expected_card_ids": []
+ },
+ {
+  "id": "T9",
+  "split": "tuning",
+  "kind": "near_domain_negative",
+  "query": "المضخة الغاطسة حرارة المحرك مرتفعة، ايش السبب",
+  "expected_card_ids": []
+ },
+ {
+  "id": "T10",
+  "split": "tuning",
+  "kind": "out_of_domain",
+  "query": "طريقة تحضير الكسكسي الليبي بالعظم",
+  "expected_card_ids": []
+ },
+ {
+  "id": "H1",
+  "split": "heldout",
+  "kind": "in_scope",
+  "query": "How do I tell whether a pressure sensor is failing or the well itself has a problem?",
+  "expected_card_ids": [
+   "card_953140cd301b"
+  ]
+ },
+ {
+  "id": "H2",
+  "split": "heldout",
+  "kind": "in_scope",
+  "query": "Can an AI system send shutdown commands to the control system?",
+  "expected_card_ids": [
+   "card_6cc391b4e2e2"
+  ]
+ },
+ {
+  "id": "H3",
+  "split": "heldout",
+  "kind": "in_scope",
+  "query": "في عمود فيه قيم فاضية وكلاس ناقص من البيانات",
+  "expected_card_ids": [
+   "card_327ace435275"
+  ]
+ },
+ {
+  "id": "H4",
+  "split": "heldout",
+  "kind": "in_scope",
+  "query": "الـ LSTM تعطي رقم واحد للعمر المتبقي بدون هامش ثقة",
+  "expected_card_ids": [
+   "card_11b4100a67b8"
+  ]
+ },
+ {
+  "id": "H5",
+  "split": "heldout",
+  "kind": "near_domain_negative",
+  "query": "السجلات الورقية وملفات الإكسل المشتتة للصيانة",
+  "expected_card_ids": []
+ },
+ {
+  "id": "H6",
+  "split": "heldout",
+  "kind": "out_of_domain",
+  "query": "نتيجة مباراة الأهلي والاتحاد أمس",
+  "expected_card_ids": []
+ },
+ {
+  "id": "H7",
+  "split": "heldout",
+  "kind": "near_domain_negative",
+  "query": "كيف نصحح تواريخ الصيانة التقريبية اللي بدون ساعة",
+  "expected_card_ids": []
+ }
+]

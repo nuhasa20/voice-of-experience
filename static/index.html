@@ -45,7 +45,95 @@
 
   <!-- Main Surface -->
   <main class="main-content">
-    <div class="flow-card">
+
+    <!-- ===================================================================
+         SEARCH & CARD LIBRARY SECTION (Stage 4)
+         =================================================================== -->
+    <section class="search-section" id="searchSection" aria-label="Search Preserved Engineering Advice">
+      <div class="search-card">
+        <div class="search-head">
+          <div class="search-title-group">
+            <div class="search-title-row">
+              <span class="search-icon-badge" aria-hidden="true">🔍</span>
+              <h2>Search Preserved Expert Knowledge</h2>
+            </div>
+            <p class="search-subtitle">Search operational troubleshooting advice across Libyan Arabic dialect and English technical terms.</p>
+          </div>
+          <button type="button" id="scrollToContributeBtn" class="btn-secondary" style="font-size: 0.8125rem;">
+            <span>+ Record New Diagnostic Note</span>
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-row">
+          <div class="search-input-wrapper">
+            <span class="search-field-icon" aria-hidden="true">🔎</span>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Describe symptoms in Arabic or English... (e.g. data leakage, انحراف الحساسات, missing NaN)"
+              autocomplete="off"
+              dir="auto"
+            >
+            <button type="button" id="searchClearBtn" class="search-clear-btn" title="Clear query" style="display: none;">✕</button>
+          </div>
+          <button type="button" id="searchSubmitBtn" class="btn-primary search-action-btn">
+            <span>Search</span>
+          </button>
+        </div>
+
+        <!-- Hint Chips -->
+        <div class="search-chips-row">
+          <span class="chips-label">Quick searches:</span>
+          <div class="chips-list">
+            <button type="button" class="search-chip" data-query="data leakage in model">Data leakage</button>
+            <button type="button" class="search-chip" data-query="داتا ليكج في التست">داتا ليكج في التست</button>
+            <button type="button" class="search-chip" data-query="sensor drift in telemetry">Sensor drift</button>
+            <button type="button" class="search-chip" data-query="انحراف الحساسات">انحراف الحساسات</button>
+            <button type="button" class="search-chip" data-query="missing NaN values">Missing NaN values</button>
+            <button type="button" class="search-chip" data-query="قيم ناقصة">قيم ناقصة</button>
+          </div>
+        </div>
+
+        <!-- Search Results Meta Bar -->
+        <div id="searchResultsMeta" class="results-meta-bar" style="display: none;">
+          <span id="resultsCountText" class="results-count-text">Found 0 matching cards</span>
+          <button type="button" id="browseAllBtn" class="btn-link">View all cards</button>
+        </div>
+
+        <!-- Search Loading Overlay -->
+        <div id="searchLoading" class="loading-overlay" style="display: none;">
+          <div class="spinner"></div>
+          <div class="loading-text">Searching Preserved Knowledge Cards...</div>
+          <div class="loading-subtext">Executing Arabic-aware character n-gram TF-IDF matching across diagnostic quotes.</div>
+        </div>
+
+        <!-- "I Don't Know" Anti-Hallucination Fallback Panel -->
+        <div id="searchFallbackState" class="search-fallback-panel" style="display: none;" role="region" aria-live="polite">
+          <div class="fallback-icon-wrap" aria-hidden="true">🛡️</div>
+          <h3 class="fallback-title">I don’t know — no expert has covered this yet</h3>
+          <p class="fallback-desc">
+            We only show answers recorded and approved by an expert.
+          </p>
+          <div class="fallback-actions">
+            <button type="button" id="fallbackBrowseAllBtn" class="btn-secondary">
+              <span>Browse All Preserved Cards</span>
+            </button>
+            <button type="button" id="fallbackRecordBtn" class="btn-primary">
+              <span>Record an Expert Note for this Symptom →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Results Grid Container -->
+        <div id="searchResultsContainer" class="cards-grid" style="display: none;"></div>
+
+      </div>
+    </section>
+
+    <!-- Contribution Flow Card -->
+    <div class="flow-card" id="contributionFlowCard">
       
       <!-- Flow Card Header -->
       <div class="flow-header">

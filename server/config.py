@@ -72,6 +72,9 @@ def __getattr__(name: str):
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB limit
 MAX_AUDIO_DURATION_SECONDS = 120.0    # 2 minutes limit
 
+# Stage 4 Search Threshold (calibrated to 0.19)
+SEARCH_THRESHOLD = float(os.getenv("SEARCH_THRESHOLD", "0.19"))
+
 def sanitize_message(message: str) -> str:
     """Sanitize any error message or string so API keys are never exposed."""
     s = str(message)

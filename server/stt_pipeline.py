@@ -67,7 +67,7 @@ def call_gemini_stt(model: str, ogg_bytes: bytes, max_retries: int = 2) -> Optio
     delays = [3]
     for attempt in range(max_retries):
         try:
-            resp = requests.post(url, headers=headers, json=payload, timeout=20)
+            resp = requests.post(url, headers=headers, json=payload, timeout=60)
             if resp.status_code == 200:
                 data = resp.json()
                 candidates = data.get("candidates", [])
@@ -95,7 +95,8 @@ def call_groq_stt(model: str, ogg_bytes: bytes) -> Optional[str]:
 
     url = "https://api.groq.com/openai/v1/audio/transcriptions"
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}"
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "User-Agent": "VoiceOfExperience/1.0"
     }
     files = {
         "file": ("audio.ogg", ogg_bytes, "audio/ogg")
@@ -108,7 +109,7 @@ def call_groq_stt(model: str, ogg_bytes: bytes) -> Optional[str]:
     }
 
     try:
-        resp = requests.post(url, headers=headers, files=files, data=data, timeout=30)
+        resp = requests.post(url, headers=headers, files=files, data=data, timeout=60)
         if resp.status_code == 200:
             result = resp.json()
             return result.get("text", "").strip()

@@ -676,6 +676,10 @@ export class ContributionWizard {
       this.saveSuccessBanner.style.display = 'flex';
       this.showToast(`Card saved! ID: ${data.id}`, 'success');
 
+      if (window.searchController) {
+        window.searchController.loadAllCards();
+      }
+
       // ── Full reset after 2.5 s so a second card can be submitted cleanly ──
       setTimeout(() => this.resetAll(), 2500);
     } catch (err) {

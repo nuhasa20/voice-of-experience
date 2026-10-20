@@ -22,6 +22,7 @@ from server.database import init_db, get_connection
 from server.audio_convert import convert_audio_to_ogg
 from server.stt_pipeline import transcribe_audio_pipeline
 from server.extractor import extract_card_fields, contains_unclear_marker
+from server.search import search_cards, search_engine, fetch_all_cards
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +45,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request, exc: Exception):
+    sanitized = sanitize_message(str(exc))
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {sanitized}"}
+    )
 
 @app.get("/api/health")
 async def health_check():
@@ -87,7 +103,10 @@ async def transcribe_audio(file: UploadFile = File(...)):
         except ValueError as ve:
             raise HTTPException(status_code=400, detail=str(ve))
         except RuntimeError as re:
-            raise HTTPException(status_code=500, detail=str(re))
+            raise HTTPException(
+                status_code=422,
+                detail=f"Audio conversion failed: {sanitize_message(str(re))}"
+            )
 
         # Save converted audio to private storage
         audio_save_path = AUDIO_DIR / f"{original_sha256}.ogg"
@@ -100,9 +119,18 @@ async def transcribe_audio(file: UploadFile = File(...)):
             stt_result = await anyio.to_thread.run_sync(
                 transcribe_audio_pipeline, original_sha256, ogg_bytes
             )
+        except RuntimeError as re:
+            sanitized = sanitize_message(str(re))
+            raise HTTPException(
+                status_code=503,
+                detail=f"STT Service Unavailable: {sanitized}"
+            )
         except Exception as e:
             sanitized = sanitize_message(str(e))
-            raise HTTPException(status_code=500, detail=f"STT Pipeline Error: {sanitized}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"STT Pipeline Error: {sanitized}"
+            )
 
         return JSONResponse(
             status_code=200,
@@ -250,6 +278,9 @@ async def save_card(req: SaveCardRequest):
 
     await anyio.to_thread.run_sync(_insert)
 
+    # Invalidate search index so new card is immediately indexable
+    search_engine.invalidate()
+
     return JSONResponse(
         status_code=201,
         content={
@@ -257,6 +288,42 @@ async def save_card(req: SaveCardRequest):
             "message": "Card saved successfully.",
         },
     )
+
+
+# -----------------------------------------------------------------------
+# POST /api/search — Character n-gram TF-IDF search
+# -----------------------------------------------------------------------
+
+class SearchRequest(BaseModel):
+    query: str
+
+@app.post("/api/search")
+async def search_endpoint(req: SearchRequest):
+    """
+    Search diagnostic cards using character n-gram TF-IDF cosine similarity.
+    Returns ranked cards with score (top 3 at most),
+    or {"results": [], "message": "I don't know"} if best score < SEARCH_THRESHOLD.
+    """
+    res = await anyio.to_thread.run_sync(
+        search_cards, req.query
+    )
+    return JSONResponse(status_code=200, content=res)
+
+
+# -----------------------------------------------------------------------
+# GET /api/cards — Card library listing
+# -----------------------------------------------------------------------
+
+@app.get("/api/cards")
+async def get_cards_endpoint():
+    """
+    Get all saved diagnostic cards for library display.
+    """
+    cards = await anyio.to_thread.run_sync(fetch_all_cards)
+    for c in cards:
+        c["approved_by_expert"] = bool(c.get("approved_by_expert"))
+        c["has_caution"] = bool(c.get("has_caution"))
+    return JSONResponse(status_code=200, content={"cards": cards, "total": len(cards)})
 
 
 # Serve audio files

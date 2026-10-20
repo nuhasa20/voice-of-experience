@@ -3,6 +3,7 @@
  */
 
 import { ContributionWizard } from './contribution.js';
+import { SearchController } from './search.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log("Voice of Experience client initializing...");
@@ -28,6 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       statusEl.style.borderColor = '#fecaca';
     }
   }
+
+  // Initialize Stage 4 Search & Knowledge Library
+  window.searchController = new SearchController();
 
   // Initialize Contribution Wizard
   window.wizard = new ContributionWizard();
