@@ -27,7 +27,46 @@ AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 SAMPLES_DIR = BASE_DIR / "samples"
 SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_PATH = Path(os.getenv("VOICE_DB_PATH", str(DATA_DIR / "voice_experience.db")))
+import sys
+
+def get_db_path() -> Path:
+    """
+    Get the active database path.
+    Dynamically checks VOICE_DB_PATH so runtime environment variable changes
+    (such as test fixtures setting temporary databases) are immediately respected.
+    Guards against tests touching the production database.
+    """
+    real_db_path = (DATA_DIR / "voice_experience.db").resolve()
+    env_val = os.getenv("VOICE_DB_PATH")
+
+    is_testing = (
+        "PYTEST_CURRENT_TEST" in os.environ
+        or "pytest" in sys.modules
+        or os.getenv("TESTING", "").lower() in ("1", "true")
+    )
+
+    if env_val:
+        resolved_path = Path(env_val).resolve()
+        if is_testing and resolved_path == real_db_path:
+            raise RuntimeError(
+                f"Security Guard: Tests are strictly forbidden from accessing the production "
+                f"database at {real_db_path}! Set VOICE_DB_PATH to an isolated temporary database."
+            )
+        return resolved_path
+
+    if is_testing:
+        raise RuntimeError(
+            f"Security Guard: Tests must never use the production database path ({real_db_path})! "
+            "Set VOICE_DB_PATH to an isolated temporary database."
+        )
+
+    return real_db_path
+
+
+def __getattr__(name: str):
+    if name == "DB_PATH":
+        return get_db_path()
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 # Upload and Audio Constraints
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB limit

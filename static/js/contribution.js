@@ -21,6 +21,8 @@ export class ContributionWizard {
     this.currentAudioPayload   = null;  // { file, blob, url }
     this.transcriptionResult   = null;  // { audio_hash, transcript, stt_provider, cached, fallback, duration }
     this.extractionResult      = null;  // { fields, model_name, cached }
+    this.isSaving              = false; // In-flight save guard
+    this.savedCardId           = null;  // Id of already-saved card to prevent duplicate retries
     // ─────────────────────────────────────────────────────────────────────
 
     this.initDOMElements();
@@ -105,6 +107,7 @@ export class ContributionWizard {
     this.saveCardBtn             = document.getElementById('saveCardBtn');
     this.saveLoading             = document.getElementById('saveLoading');
     this.saveSuccessBanner       = document.getElementById('saveSuccessBanner');
+    this.saveSuccessMsg          = document.getElementById('saveSuccessMsg');
     this.backToTranscriptBtn     = document.getElementById('backToTranscriptBtn');
 
     // Unclear confirmation modal
@@ -198,9 +201,9 @@ export class ContributionWizard {
       this.sectionTranscript.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // Expert approval gates the Save button
+    // Expert approval gates the Save button (unless already successfully saved)
     this.expertApprovalCheckbox.addEventListener('change', () => {
-      this.saveCardBtn.disabled = !this.expertApprovalCheckbox.checked;
+      this.saveCardBtn.disabled = !this.expertApprovalCheckbox.checked || !!this.savedCardId;
     });
 
     // Save card (calls /api/cards)
@@ -436,6 +439,8 @@ export class ContributionWizard {
     this.saveSuccessBanner.style.display        = 'none';
     this.expertApprovalCheckbox.checked         = false;
     this.saveCardBtn.disabled                   = true;
+    this.savedCardId                            = null;
+    this.isSaving                               = false;
     this.extractionLoading.style.display        = 'flex';
 
     try {
@@ -612,6 +617,11 @@ export class ContributionWizard {
   // Section 4 → Save: POST /api/cards
   // =========================================================================
   async submitSaveCard() {
+    // Prevent duplicate saves while in-flight or if card was already saved
+    if (this.isSaving || this.savedCardId) {
+      return;
+    }
+
     if (!this.expertApprovalCheckbox.checked) {
       this.showToast('Please mark "Expert-Approved" before saving.', 'warning');
       return;
@@ -640,6 +650,7 @@ export class ContributionWizard {
       cautions:         this._buildFieldPayload(fields.cautions),
     };
 
+    this.isSaving                   = true;
     this.saveLoading.style.display  = 'flex';
     this.saveCardBtn.disabled       = true;
     this.saveSuccessBanner.style.display = 'none';
@@ -658,7 +669,10 @@ export class ContributionWizard {
       }
 
       const data = await resp.json();
-      this.saveSuccessMsg.textContent   = `✓ Card saved (${data.id}) — you can now add another card.`;
+      this.savedCardId = data.id;
+      if (this.saveSuccessMsg) {
+        this.saveSuccessMsg.textContent   = `✓ Card saved (${data.id}) — you can now add another card.`;
+      }
       this.saveSuccessBanner.style.display = 'flex';
       this.showToast(`Card saved! ID: ${data.id}`, 'success');
 
@@ -666,9 +680,13 @@ export class ContributionWizard {
       setTimeout(() => this.resetAll(), 2500);
     } catch (err) {
       this.showToast(`Save failed: ${err.message}`, 'error');
-      this.saveCardBtn.disabled = false;
+      // Only re-enable the button if the card was NOT already created in the DB
+      if (!this.savedCardId) {
+        this.saveCardBtn.disabled = false;
+      }
     } finally {
       this.saveLoading.style.display = 'none';
+      this.isSaving = false;
     }
   }
 
@@ -731,6 +749,8 @@ export class ContributionWizard {
     this.currentAudioPayload  = null;
     this.transcriptionResult  = null;
     this.extractionResult     = null;
+    this.isSaving             = false;
+    this.savedCardId          = null;
 
     // Reset section 2
     this.recordPreviewBox.style.display = 'none';
@@ -754,6 +774,9 @@ export class ContributionWizard {
     this.extractedFieldsContainer.style.display = 'none';
     this.cardApprovalActions.style.display      = 'none';
     this.saveSuccessBanner.style.display        = 'none';
+    if (this.saveSuccessMsg) {
+      this.saveSuccessMsg.textContent           = 'Card saved successfully!';
+    }
     this.expertApprovalCheckbox.checked         = false;
     this.saveCardBtn.disabled                   = true;
 

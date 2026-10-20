@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 from server import config
 
 def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(config.DB_PATH))
+    conn = sqlite3.connect(str(config.get_db_path()))
     conn.row_factory = sqlite3.Row
     return conn
 
