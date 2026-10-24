@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <title>Voice of Experience (صوت الخبرة) — App Map & Architecture Guide</title>
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-subtle: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --brand-primary: #0f766e;
+      --brand-hover: #0d5d56;
+      --brand-light: #f0fdfa;
+      --brand-border: #99f6e4;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, Monaco, "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    header.app-header {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.625rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .badge-teal {
+      background: var(--brand-light);
+      color: var(--brand-primary);
+      border: 1px solid var(--brand-border);
+    }
+
+    .badge-gray {
+      background: var(--bg-surface-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    h1 {
+      font-size: 1.625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    p.lead {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    p, li {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    li {
+      margin-bottom: 0.375rem;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.84375rem;
+      background: var(--bg-surface-subtle);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: var(--font-mono);
+      font-size: 0.84375rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: 0.75rem 0;
+      line-height: 1.5;
+    }
+
+    .diagram-container {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .diagram-svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .route-step {
+      border-left: 3px solid var(--brand-primary);
+      padding-left: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .route-step-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .route-step-path {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--brand-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .pointer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .pointer-box {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+
+    .pointer-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .callout {
+      background: var(--brand-light);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      font-size: 0.9375rem;
+      color: var(--brand-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    details {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      margin: 0.5rem 0;
+      padding: 0.75rem 1rem;
+    }
+
+    summary {
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    details[open] summary {
+      margin-bottom: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      padding: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="badge-bar">
+        <span class="badge badge-teal">Snapshot: Commit d7b508b</span>
+        <span class="badge badge-gray">FastAPI + Vanilla JS/CSS</span>
+        <span class="badge badge-gray">46 / 46 Tests Passing</span>
+        <span class="badge badge-teal">Search Held-Out: 7 / 7 (100%)</span>
+      </div>
+      <h1>Voice of Experience (صوت الخبرة) — App Map</h1>
+      <p class="lead">
+        A compact architectural guide to the proof-of-concept codebase. Trace how spoken troubleshooting knowledge flows from audio capture to quote-verified diagnostic cards and threshold-bounded search.
+      </p>
+    </header>
+
+    <!-- Overview -->
+    <section class="card">
+      <h2>1. Architecture in Plain Language</h2>
+      <p>
+        The system consists of three modular layers running locally without cloud lock-in:
+      </p>
+      <ul>
+        <li><strong>Frontend SPA (<code>static/</code>):</strong> A single-page interface with an accessible search hero, an interactive suggestions dropdown, and a 4-step diagnostic wizard (Microphone recording via MediaRecorder, verbatim transcript review with live <code>[unclear]</code> counter, 5-field preview, and expert approval).</li>
+        <li><strong>Backend Engine (<code>server/</code>):</strong> A lightweight FastAPI server that transcribes audio via a 3-tier cascade, normalizes Libyan Arabic dialect text, enforces exact substring quote verification, and ranks cards using character n-gram cosine similarity.</li>
+        <li><strong>Local Storage (<code>data/</code> & <code>audio/</code>):</strong> A private SQLite database storing diagnostic cards and SHA-256 keyed cache tables, alongside an audio directory holding OGG Opus voice notes.</li>
+      </ul>
+    </section>
+
+    <!-- Visual Journey Diagram -->
+    <section class="card">
+      <h2>2. End-to-End Action Flow</h2>
+      <p>
+        How a symptom query travels through the system to guarantee zero hallucinations:
+      </p>
+
+      <div class="diagram-container">
+        <svg class="diagram-svg" viewBox="0 0 800 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Action Flow Diagram">
+          <!-- Step 1: Query Input -->
+          <rect x="20" y="40" width="160" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <text x="100" y="70" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">1. User Search Query</text>
+          <text x="100" y="90" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#64748b">Arabic / English terms</text>
+          
+          <!-- Arrow 1 -> 2 -->
+          <line x1="180" y1="75" x2="225" y2="75" stroke="#0f766e" stroke-width="2"/>
+          <polygon points="225,71 235,75 225,79" fill="#0f766e"/>
+
+          <!-- Step 2: Search Engine -->
+          <rect x="235" y="40" width="170" height="70" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          <text x="320" y="68" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#0f766e">2. server/search.py</text>
+          <text x="320" y="85" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#334155">Char 3-4-gram TF-IDF</text>
+          <text x="320" y="98" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#64748b">Cosine similarity calculation</text>
+
+          <!-- Arrow 2 -> 3 -->
+          <line x1="405" y1="75" x2="450" y2="75" stroke="#0f766e" stroke-width="2"/>
+          <polygon points="450,71 460,75 450,79" fill="#0f766e"/>
+
+          <!-- Step 3: Decision Threshold -->
+          <polygon points="530,35 600,75 530,115 460,75" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+          <text x="530" y="72" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="bold" fill="#0f766e">Score ≥ 0.19?</text>
+          <text x="530" y="86" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#64748b">τ = SEARCH_THRESHOLD</text>
+
+          <!-- Branch Yes: Top Ranked Cards -->
+          <line x1="600" y1="75" x2="650" y2="75" stroke="#0f766e" stroke-width="2"/>
+          <polygon points="650,71 660,75 650,79" fill="#0f766e"/>
+          <rect x="660" y="40" width="125" height="70" rx="8" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2"/>
+          <text x="722" y="68" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="bold" fill="#065f46">Ranked Cards</text>
+          <text x="722" y="84" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#047857">Quotes, Checks, Audio</text>
+          <text x="722" y="98" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#047857">Top 1-3 Matches</text>
+
+          <!-- Branch No: Fallback Panel -->
+          <line x1="530" y1="115" x2="530" y2="165" stroke="#64748b" stroke-width="2"/>
+          <polygon points="526,165 530,175 534,165" fill="#64748b"/>
+          <rect x="440" y="175" width="180" height="50" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+          <text x="530" y="196" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="bold" fill="#1e40af">"I Don't Know" Fallback</text>
+          <text x="530" y="212" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#3b82f6">Zero unverified hallucinations</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Reference Code Route -->
+    <section class="card">
+      <h2>3. Reference Code Route (Key Locations)</h2>
+      <p style="margin-bottom: 1rem;">
+        Follow the exact code execution path for the system's core capabilities:
+      </p>
+
+      <div class="route-step">
+        <div class="route-step-title">Stop 1: Verbatim Quote Verification Guard</div>
+        <div class="route-step-path">server/extractor.py &rarr; extract_card_fields()</div>
+        <p>
+          Normalizes Arabic text (removing diacritics and unifying Alef/Yaa variants) and executes deterministic substring checks. If an AI model attempts to paraphrase rather than quote directly, or if the quote contains <code>[unclear]</code>, the field is rejected with <em>"Could not be verified – please edit"</em>.
+        </p>
+      </div>
+
+      <div class="route-step">
+        <div class="route-step-title">Stop 2: Character N-Gram Retrieval & Threshold Gate</div>
+        <div class="route-step-path">server/search.py &rarr; search_cards()</div>
+        <p>
+          Vectorizes queries into character 3-gram and 4-gram TF-IDF representations. Computes cosine similarity against all stored cards. If the top score is below <code>SEARCH_THRESHOLD</code> (0.19), it suppresses ungrounded output and triggers the fallback contract.
+        </p>
+      </div>
+
+      <div class="route-step">
+        <div class="route-step-title">Stop 3: Client Controller & Suggestions Panel</div>
+        <div class="route-step-path">static/js/search.js &rarr; class SearchController</div>
+        <p>
+          Binds keyboard navigation (Arrow keys, Enter, Escape), manages the detached floating suggestions panel with example chips, and renders result cards with audio playback and expandable diagnostic breakdowns.
+        </p>
+      </div>
+    </section>
+
+    <!-- Where to Start Pointers -->
+    <section class="card">
+      <h2>4. To Change This, Start Here</h2>
+      <div class="pointer-grid">
+        <div class="pointer-box">
+          <div class="pointer-title">Adjust "I Don't Know" Sensitivity</div>
+          <p>
+            Edit <code>SEARCH_THRESHOLD</code> in <code>.env</code> or <code>server/config.py</code>. Increasing towards 0.25 makes the system stricter; decreasing towards 0.15 allows broader matches.
+          </p>
+        </div>
+        <div class="pointer-box">
+          <div class="pointer-title">Add Dialect Synonyms & Aliases</div>
+          <p>
+            Update <code>ALIAS_DICT</code> in <code>server/search.py</code> to add domain terms (e.g. mapping <em>"طلمبة"</em> to <em>"مضخة pump"</em>).
+          </p>
+        </div>
+        <div class="pointer-box">
+          <div class="pointer-title">Configure STT Fallback Cascade</div>
+          <p>
+            Change <code>STT_PRIMARY_MODEL</code> or <code>STT_SECONDARY_MODEL</code> in <code>.env</code> to switch between Gemini Flash tiers or Groq Whisper.
+          </p>
+        </div>
+        <div class="pointer-box">
+          <div class="pointer-title">Modify Diagnostic Fields Schema</div>
+          <p>
+            Adjust <code>EXTRACTION_PROMPT</code> and field definitions in <code>server/extractor.py</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- A Practice to Reuse -->
+    <section class="card">
+      <h2>5. A Practice to Reuse</h2>
+      <div class="callout">
+        <div class="callout-title">Architectural Pattern: Deterministic Verifiers as Safety Wrappers Around LLMs</div>
+        <p>
+          In mission-critical industrial applications, generative language models should not be trusted to self-verify their own facts. <strong>Voice of Experience</strong> demonstrates a reusable pattern:
+        </p>
+        <ul style="margin-top: 0.5rem;">
+          <li>Use the LLM for translation and semantic extraction.</li>
+          <li>Use deterministic, non-LLM code (Python string normalization, substring validation, and TF-IDF similarity math) to verify outputs and enforce boundaries.</li>
+          <li>Enforce a human-in-the-loop approval gate before writes to the production knowledge base.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- How to Run -->
+    <section class="card">
+      <h2>6. How to Run & Verify</h2>
+      <pre># 1. Activate environment and install dependencies
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Run the test suite (46 tests)
+python3 -m pytest tests/ -v
+
+# 3. Start the local server
+uvicorn server.main:app --host 127.0.0.1 --port 8000</pre>
+    </section>
+
+    <footer>
+      Voice of Experience (صوت الخبرة) &bull; Devpost Proof-of-Concept &bull; Licensed under MIT
+    </footer>
+
+  </div>
+
+</body>
+</html>

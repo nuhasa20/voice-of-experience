@@ -1,6 +1,6 @@
 ---
 doc: spec
-status: draft
+status: approved
 ---
 
 # Voice of Experience (صوت الخبرة) — Technical Specification
