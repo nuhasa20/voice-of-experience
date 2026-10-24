@@ -326,11 +326,20 @@ async def get_cards_endpoint():
     return JSONResponse(status_code=200, content={"cards": cards, "total": len(cards)})
 
 
+class NoCacheStaticFiles(StaticFiles):
+    """StaticFiles subclass that serves assets with Cache-Control: no-cache."""
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 # Serve audio files
-app.mount("/audio", StaticFiles(directory=str(AUDIO_DIR)), name="audio")
+app.mount("/audio", NoCacheStaticFiles(directory=str(AUDIO_DIR)), name="audio")
 
 # Serve static frontend SPA
 STATIC_DIR = BASE_DIR / "static"
 if STATIC_DIR.exists():
-    app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+    app.mount("/", NoCacheStaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+
 

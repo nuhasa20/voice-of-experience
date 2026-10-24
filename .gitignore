@@ -1,9 +1,10 @@
 .env
+.env.*
+!.env.example
 audio/
-__pycache__/
-node_modules/
 data/
+__pycache__/
 *.db
+node_modules/
 
 /devpost/learner-profile.md
-.env.*
