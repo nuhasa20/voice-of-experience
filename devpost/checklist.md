@@ -25,7 +25,7 @@ Build mode: fast
   PRD ref: `prd.md > 1. The Core Journey` (Step 3), `prd.md > 4.3 Contribution Wizard` (Step 3)
   Spec ref: `spec.md > Components > 2. Contribution Flow` (Section 3), `spec.md > Important Failure Modes`
   Build: Add live regex scanner in `static/js/contribution.js` for `\[unclear\]` tokens; update counter badge in `static/index.html`; implement confirmation modal `#unclearConfirmModal` with "Back to Editing" and "Confirm & Extract Anyway" actions.
-  Verify (mechanical): Run browser DOM assertion tests in `tests/test_save_flow.py` verifying `#unclearCounter`, `#modalUnclearCount`, and event handlers exist and bind correctly without exceptions.
+  Verify (mechanical): Run `python3 -m pytest tests/test_save_flow.py` — this file tests: (1) that every `getElementById` call in `contribution.js` has a matching element in `index.html` (DOM binding guard), (2) that duplicate-save guards (`this.isSaving`, `this.savedCardId`) exist, and (3) that `POST /api/cards` persists a row correctly to SQLite. It does **not** exercise the `[unclear]` confirmation modal interactively — that modal was visually checked by the learner on desktop Chrome only.
   Learner check: Type text containing `[unclear]` in the transcript editor, verify counter increments to 1, click Extract, and verify warning modal explains that quotes containing `[unclear]` will fail verification.
   Commit: `Build stages 1-3: STT pipeline, extraction with quote verification, contribution UI` (commit `78d416c`)
 
@@ -51,12 +51,12 @@ Build mode: fast
 
 - [x] **5. Search UI Modernization, Responsive Detached Panel & Submission Polish**
   Becomes usable: Clean, professional industrial interface featuring a hero search card with a neumorphic teal pill input, detached floating suggestions panel with soft teal shadow and rounded corners (16px), complete removal of emojis in favor of accessible inline SVGs, `<meta name="google" content="notranslate">`, and `Cache-Control: no-cache` headers on all static assets.
-  Why now: Prepares the proof of concept for public review and evaluation, ensuring high visual clarity on both mobile (375px) and desktop (1280px) viewports with zero browser-level translation corruption of dialectal text.
+  Why now: Prepares the proof of concept for public review and evaluation, ensuring high visual clarity on desktop Chrome with zero browser-level translation corruption of dialectal text.
   PRD ref: `prd.md > 3. Look and Feel`, `prd.md > 2.1 Main Surface`
   Spec ref: `spec.md > Look and Feel`, `spec.md > Where It Runs and How Someone Tries It`
   Build: Redesign search styles in `static/css/main.css`; refine dropdown positioning to `calc(100% + 8px)`; remove `#scrollToContributeBtn` from hero; replace emojis in `static/index.html` with inline SVGs; configure `NoCacheStaticFiles` in `server/main.py`; generate `README.md` and `.env.example`.
   Verify (mechanical): Run full test suite `python3 -m pytest tests/ -v` (all 46 tests passed in 58s); verify zero emojis in `static/index.html`; verify `Cache-Control: no-cache` on `/`, `/css/main.css`, and `/js/search.js`.
-  Learner check: Open app at 1280px and 375px, click search bar to see detached floating suggestions panel, confirm full pill rounded ends remain intact, and verify clean typography across all cards.
+  Learner check: Open app on desktop Chrome, click search bar to see detached floating suggestions panel, confirm full pill rounded ends remain intact, and verify clean typography across all cards. Mobile widths (e.g. 375px) were not tested with an automated or emulated browser run.
   Commit: `Prepare submission: README, env template, UI cleanup, no-cache static` (commit `d7b508b`)
 
 ## Hands-on Checkpoints

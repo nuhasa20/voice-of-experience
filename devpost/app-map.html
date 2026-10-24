@@ -311,7 +311,7 @@
           <!-- Step 2: Search Engine -->
           <rect x="235" y="40" width="170" height="70" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
           <text x="320" y="68" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#0f766e">2. server/search.py</text>
-          <text x="320" y="85" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#334155">Char 3-4-gram TF-IDF</text>
+          <text x="320" y="85" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#334155">Char 3–5-gram TF-IDF</text>
           <text x="320" y="98" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#64748b">Cosine similarity calculation</text>
 
           <!-- Arrow 2 -> 3 -->
@@ -360,7 +360,7 @@
         <div class="route-step-title">Stop 2: Character N-Gram Retrieval & Threshold Gate</div>
         <div class="route-step-path">server/search.py &rarr; search_cards()</div>
         <p>
-          Vectorizes queries into character 3-gram and 4-gram TF-IDF representations. Computes cosine similarity against all stored cards. If the top score is below <code>SEARCH_THRESHOLD</code> (0.19), it suppresses ungrounded output and triggers the fallback contract.
+          Vectorizes queries into character 3-gram to 5-gram TF-IDF representations (<code>analyzer="char_wb"</code>, <code>ngram_range=(3, 5)</code>). Computes cosine similarity against all stored cards. If the top score is below <code>SEARCH_THRESHOLD</code> (0.19), it suppresses ungrounded output and triggers the fallback contract.
         </p>
       </div>
 
