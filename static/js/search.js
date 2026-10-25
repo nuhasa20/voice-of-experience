@@ -59,6 +59,7 @@ export class SearchController {
     this.browseAllBtn           = document.getElementById('browseAllBtn');
     this.fallbackBrowseAllBtn   = document.getElementById('fallbackBrowseAllBtn');
     this.fallbackRecordBtn      = document.getElementById('fallbackRecordBtn');
+    this.scrollToContributeBtn   = document.getElementById('scrollToContributeBtn');
 
     this.cachedCards             = [];
     this.isSearching             = false;
@@ -216,6 +217,9 @@ export class SearchController {
       }
     };
 
+    if (this.scrollToContributeBtn) {
+      this.scrollToContributeBtn.addEventListener('click', scrollToContribute);
+    }
     if (this.fallbackRecordBtn) {
       this.fallbackRecordBtn.addEventListener('click', scrollToContribute);
     }

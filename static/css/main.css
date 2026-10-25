@@ -1431,6 +1431,24 @@ body {
   align-items: center;
   gap: 0.375rem;
   flex-shrink: 0;
+  color: var(--brand-primary);
+  background: var(--brand-light);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.search-contribute-cta:hover:not(:disabled) {
+  background: #ccfbf1;
+  border-color: var(--brand-primary);
+  color: var(--brand-hover);
+}
+
+.search-contribute-cta:focus-visible {
+  outline: 2px solid var(--brand-focus);
+  outline-offset: 2px;
 }
 
 .search-hero-body {
